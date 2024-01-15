@@ -136,7 +136,7 @@ export default class Image extends Component {
     const wasLoaded = loadingCache[src] && loadingCache[src][loadStageAtCall] && loadingCache[src][loadStageAtCall][res]
     
 
-    if (this.loaded[res].setteled) this.newLoadedPromise(res)
+    if (this.loaded[res].settled) this.newLoadedPromise(res)
 
     
 
