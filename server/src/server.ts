@@ -45,7 +45,7 @@ setup("lbAnmeldung").then(async ({app, db}) => {
   let lastTxt = await checkWithPup()
   if (file.length.get() === 0) addLineToFile(lastTxt)
   if (!process.env.DEV) sendMsgToClients("Started and operational")
-  if (file[file.length.get()-1].change !== lastTxt) {
+  if (file[file.length.get()-1].change.get() !== lastTxt) {
     sendMsgToClients("Change detected")
     addLineToFile(lastTxt)
   }
@@ -192,6 +192,8 @@ async function checkWithPup() {
     await Promise.all(promises);
   }
 
+  await delay(50)
+  await page.waitForSelector("#app > div.ui.container > div.ui.styled.fluid.accordion h5.ui.top.attached.header")
   await delay(3000)
   
   const str = await page.evaluate(() => {
