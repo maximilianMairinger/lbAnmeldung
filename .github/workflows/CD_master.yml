@@ -72,7 +72,7 @@ jobs:
 
     - name: Installing runner dependencies
       if: ${{ (needs.detectChanges.outputs.app == 'true') || (needs.detectChanges.outputs.dependencies == 'true') || (needs.detectChanges.outputs.CD == 'true') }}
-      run: npm i
+      run: npx -y pnpm i
 
     # - name: set environment variables
     #   uses: allenevans/set-env@v2.0.0
@@ -113,7 +113,7 @@ jobs:
 
     - name: Installing runner dependencies
       if: ${{ needs.detectChanges.outputs.server == 'true' || needs.detectChanges.outputs.dependencies == 'true' || (needs.detectChanges.outputs.CD == 'true') }}
-      run: npm i
+      run: npx -y pnpm i
 
     - name: set env vars
       uses: SpicyPizza/create-envfile@v2.0
@@ -161,7 +161,7 @@ jobs:
 
     - name: Installing runner dependencies
       if: ${{ needs.detectChanges.outputs.replServer == 'true' || needs.detectChanges.outputs.dependencies == 'true' || (needs.detectChanges.outputs.CD == 'true') }}
-      run: npm i
+      run: npx -y pnpm i
 
     # - name: set environment variables
     #   uses: allenevans/set-env@v2.0.0
@@ -203,7 +203,7 @@ jobs:
 
     - name: Installing runner dependencies
       if: ${{ needs.detectChanges.outputs.serviceWorker == 'true' || needs.detectChanges.outputs.dependencies == 'true' || (needs.detectChanges.outputs.CD == 'true') }}
-      run: npm i
+      run: npx -y pnpm i
 
     # - name: set environment variables
     #   uses: allenevans/set-env@v2.0.0
@@ -335,7 +335,7 @@ jobs:
           cd /var/www/html/lbAnmeldung/master
           source ~/.nvm/nvm.sh
           nvm use default
-          npm i
+          npx -y pnpm update
 
   deploy: 
     runs-on: ubuntu-latest
