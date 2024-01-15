@@ -45,6 +45,10 @@ setup("lbAnmeldung").then(async ({app, db}) => {
   let lastTxt = await checkWithPup()
   if (file.length.get() === 0) addLineToFile(lastTxt)
   if (!process.env.DEV) sendMsgToClients("Started and operational")
+  if (file[file.length.get()-1].change !== lastTxt) {
+    sendMsgToClients("Change detected")
+    addLineToFile(lastTxt)
+  }
   setInterval(async () => {
     const newTxt = await checkWithPup()
     try {
@@ -54,7 +58,7 @@ setup("lbAnmeldung").then(async ({app, db}) => {
       working = true
       if (lastTxt !== newTxt) {
         addLineToFile(newTxt)
-        sendMsgToClients("Change detected", 1)
+        sendMsgToClients("Change detected")
       }
     }
     catch(e) {
@@ -64,7 +68,7 @@ setup("lbAnmeldung").then(async ({app, db}) => {
       }
       working = false
     }
-  }, ms("20min"))
+  }, ms("5min"))
   
   
 
@@ -76,7 +80,7 @@ setup("lbAnmeldung").then(async ({app, db}) => {
   function sendMsgToClients(msg: string, priority = 0) {
     return new Promise((res, rej) => {
       log(msg)
-      p.send( {m: msg, pr: priority}, ( err, result ) => {
+      p.send( {s: 5, m: process.env.DEV ? `[dev]: ${msg}` : `[prod]: ${msg}`, pr: priority}, ( err, result ) => {
         res({ok: !err, result, err})
       });
     })
@@ -191,12 +195,13 @@ async function checkWithPup() {
   await delay(3000)
   
   const str = await page.evaluate(() => {
-    const els = document.querySelectorAll("#app > div.ui.container > div.ui.styled.fluid.accordion .title")
+    const els = document.querySelectorAll("#app > div.ui.container > div.ui.styled.fluid.accordion h5.ui.top.attached.header")
     if (els === null) return null
     let str = ""
     for (const e of Array.from(els)) {
       str += e.textContent + "\n"
     }
+
     return str === "" ? null : str
   })
 
@@ -210,6 +215,7 @@ async function checkWithPup() {
 
   return str
 }
+
 
 
 

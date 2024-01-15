@@ -58,6 +58,10 @@ diff-same {
   color: black
 }
 
+full-entry {
+  cursor: pointer;
+}
+
 
 
 /* @font-face {
