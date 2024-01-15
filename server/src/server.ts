@@ -91,9 +91,14 @@ setup("lbAnmeldung").then(async ({app, db}) => {
 async function checkWithPup() {
   log("starting pup")
 
-  const browser = await puppeteer.launch({headless: 'new'});
+  const browser = await puppeteer.launch({
+    headless: process.env.DEV ? false : 'new',
+    args: [
+      '--no-sandbox'
+    ],
+  });
   const page = await browser.newPage();
-  const timeout = 5000;
+  const timeout = 20000;
   page.setDefaultTimeout(timeout);
 
   {
@@ -186,9 +191,13 @@ async function checkWithPup() {
   await delay(3000)
   
   const str = await page.evaluate(() => {
-    const el = document.querySelector("#app > div.ui.container")
-    if (el === null) return null
-    return el.textContent
+    const els = document.querySelectorAll("#app > div.ui.container > div.ui.styled.fluid.accordion .title")
+    if (els === null) return null
+    let str = ""
+    for (const e of Array.from(els)) {
+      str += e.textContent + "\n"
+    }
+    return str === "" ? null : str
   })
 
   if (str === null) {
