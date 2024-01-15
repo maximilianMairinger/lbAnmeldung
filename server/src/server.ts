@@ -197,7 +197,7 @@ async function checkWithPup() {
   await delay(3000)
   
   const str = await page.evaluate(() => {
-    const els = document.querySelectorAll("#app > div.ui.container > div.ui.styled.fluid.accordion h5.ui.top.attached.header")
+    const els = document.querySelectorAll("#app > div.ui.container > div.ui.styled.fluid.accordion h5.ui.top.attached.header, #app > div.ui.container .title")
     if (els === null) return null
     let str = ""
     for (const e of Array.from(els)) {

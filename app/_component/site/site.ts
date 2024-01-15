@@ -22,7 +22,10 @@ export default class Site extends Component {
       let changes = (await ajax.get("/res/changes.json")) as {change: string, time: string}[]
       console.log(changes)
       for (let i = 0; i < changes.length; i++) {
-        const change = changes[i]
+        let change = changes[i]
+        change.change = change.change.split("\n").join("<br>")
+
+
         const historyEntryElem = ce("history-entry")
         historyWrapper.prepend(historyEntryElem)
 
