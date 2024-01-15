@@ -74,6 +74,13 @@ jobs:
       if: ${{ (needs.detectChanges.outputs.app == 'true') || (needs.detectChanges.outputs.dependencies == 'true') || (needs.detectChanges.outputs.CD == 'true') }}
       run: npm i
 
+    - name: set env vars
+      uses: SpicyPizza/create-envfile@v2.0
+      with:
+        envkey_PUSHSAFER_KEY: '${{ secrets.PUSHSAFER_KEY }}'
+        envkey_TGM_USERNAME: '${{ secrets.TGM_USERNAME }}'
+        envkey_TGM_PASSWORD: '${{ secrets.TGM_PASSWORD }}'
+
     # - name: set environment variables
     #   uses: allenevans/set-env@v2.0.0
     #   with:

@@ -20,4 +20,5 @@ deploy.zip
 debug.log
 pugBody.gen.ts
 .env
+public/res/changes.json
 
