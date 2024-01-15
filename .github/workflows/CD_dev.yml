@@ -49,6 +49,7 @@ jobs:
             - '.deploy'
 
 
+            
   buildApp: 
     runs-on: ubuntu-latest
     needs: [detectChanges]
