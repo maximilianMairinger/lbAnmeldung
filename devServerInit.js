@@ -25,7 +25,6 @@ const appEntryFileName = "lbAnmeldung.js"
 
 
 
-
 let serverDir = "./server/dist";
 let appDir = "./public/dist";
 
@@ -97,7 +96,8 @@ let appEntryPath = path.join(appDir, appEntryFileName);
     watch: serverDir,
     script: serverEntryPath,
     env: {
-      port: gotPort
+      port: gotPort,
+      DEV: true
     }
   })
 

@@ -12,6 +12,7 @@ if (process.env.TGM_USERNAME === undefined) throw new Error("No tgm username pro
 if (process.env.TGM_PASSWORD === undefined) throw new Error("No tgm password provided")
 
 
+console.log("process.env.DEV", process.env.DEV)
 
 function log(...msg) {
   console.log(timeNow(), ...msg)
@@ -29,6 +30,10 @@ function timeNow() {
 
 setup("lbAnmeldung").then(async ({app, db}) => {
   const file = await josmFsReflection("./public/res/changes.json", {length: 0})
+  function addLineToFile(txt: string) {
+    const len = file.length.get()
+    file({length: len + 1, [len]: {time: timeNow(), change: txt}})
+  }
 
   const p = new PushSaver({
     k: process.env.PUSHSAFER_KEY as string,
@@ -38,7 +43,8 @@ setup("lbAnmeldung").then(async ({app, db}) => {
 
   let working = true
   let lastTxt = await checkWithPup()
-  sendMsgToClients("Started and operational")
+  if (file.length.get() === 0) addLineToFile(lastTxt)
+  if (!process.env.DEV) sendMsgToClients("Started and operational")
   setInterval(async () => {
     const newTxt = await checkWithPup()
     try {
@@ -47,8 +53,7 @@ setup("lbAnmeldung").then(async ({app, db}) => {
       }
       working = true
       if (lastTxt !== newTxt) {
-        const len = file.length.get()
-        file({length: len + 1, [len]: {time: timeNow(), txt: newTxt}})
+        addLineToFile(newTxt)
         sendMsgToClients("Change detected", 1)
       }
     }

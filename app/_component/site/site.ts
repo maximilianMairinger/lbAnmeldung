@@ -1,21 +1,12 @@
 import Component from "../component"
 import declareComponent from "../../lib/declareComponent"
-import PageManager from "./../_themeAble/_frame/_manager/pageManager/pageManager"
-import lang from "../../lib/lang"
-import LowerNav from "../_themeAble/lowerNav/lowerNav"
-import Header from "../_themeAble/header/header"
-import { dirString } from "../../lib/domain"
-import { ElementList } from "extended-dom"
-import HighlightAbleIcon from "../_themeAble/_icon/_highlightAbleIcon/highlightAbleIcon"
-import { Data, DataSubscription } from "josm"
-import { linkRecord } from "../_themeAble/link/link"
+import BlockButton from "./../_themeAble/_focusAble/_formUi/_rippleButton/_blockButton/blockButton"
+import ajaon from "ajaon"
+import delay from "delay"
+import diff from "fast-diff"
 
+const ajax = ajaon()
 
-const topLimit = 0
-const scrollTrendActivationCount = 20
-
-// intentionally never resolve those
-linkRecord.record()
 
 export default class Site extends Component {
 
@@ -23,145 +14,51 @@ export default class Site extends Component {
     super()
 
 
-    
+    const historyWrapper = ce("history-wrapper")
+
+    this.apd(new BlockButton("Open history", async () => {
+      historyWrapper.emptyNodes()
+      let changes = (await ajax.get("/res/changes.json")) as {change: string, time: string}[]
+      console.log(changes)
+      for (let i = 0; i < changes.length; i++) {
+        const change = changes[i]
+        const historyEntryElem = ce("history-entry")
+        historyWrapper.prepend(historyEntryElem)
+
+        const heading = ce("h2")
+        heading.txt(`List from ${change.time}`)
+        historyEntryElem.apd(heading)
 
 
-    
-    
-
-    let lowerNav = new LowerNav()
-    let currentlyShowingLowerNav: boolean
-
-
-    let header = new Header(async (hide, init, func) => {
-      if (hide) {
-        
-        currentlyShowingLowerNav = false
-
-        await lowerNav.disable(init, func)
-
-      }
-      else {
-        currentlyShowingLowerNav = true
-
-        lowerNav.updatePage(currentSectons, currentDomainLevel)
-        await lowerNav.enable(init, func)
-        if (currentSection !== undefined) lowerNav.updateSelectedLink(currentSection)
-
-      }
-      
-    })
-
-    let navs = new ElementList<Element>(header, lowerNav)
-    
-
-    let lastScrollProg = 0
-
-    let currentDomainLevel = 0
-    let currentSectons: {[link: string]: HighlightAbleIcon}[]
-    let currentSection: string
-
-
-    let pageManager = new PageManager((page, sections, domainLevel) => {
-      currentDomainLevel = domainLevel
-      currentSectons = sections
-
-      const sectionNames = Object.keys(sections)
-
-
-      let lastData: any
-      let removeIndices = []
-      sectionNames.ea((s, i) => {
-        let data = lang.links[s]
-
-        while (data === undefined) {
-          if (s === "") {
-            data = lastData
-            break
+        const fullEntryElem = ce("full-entry")
+        const lastChange = changes[i -1]
+        if (lastChange !== undefined) {
+          const diffs = diff(lastChange.change, change.change)
+          let s = ""
+          for (const d of diffs) {
+            if (d[0] === 0) s += "<diff-same>" + d[1] + "</diff-same>"
+            else if (d[0] === 1) s += "<diff-add>" + d[1] + "</diff-add>"
+            else if (d[0] === -1) s += "<diff-rem>" + d[1] + "</diff-rem>"
           }
-          s = s.slice(0, s.lastIndexOf(dirString))
-          data = lang.links[s]
+          fullEntryElem.html(s)
         }
-  
-        if (data === lastData) removeIndices.add(i)
-        else lastData = data
-      })
-      for (const i of removeIndices) {
-        delete sections[sectionNames[i]]
-      }
-      sectionNames.rmI(...removeIndices)
-
-
-      if (currentlyShowingLowerNav) lowerNav.updatePage(sections, domainLevel)
-      header.updatePage(sectionNames, domainLevel)
-    }, (section) => {
-      currentSection = section
-      if (currentlyShowingLowerNav) lowerNav.updateSelectedLink(section)
-      header.updateSelectedLink(section)
-    }, (prog) => {
-      if (lastScrollProg > topLimit) {
-        if (prog <= topLimit) {
-          header.onTop()
+        else {
+          fullEntryElem.html("<diff-add>" + change.change + "</diff-add>")
         }
-      }
-      else if (prog > topLimit) {
-        header.notTop()
-      }
-
-      lastScrollProg = prog
-    },);
-
-    
-
-    this.apd(pageManager)
-    pageManager.activate()
-    pageManager.minimalContentPaint().then(() => {
-      // @ts-ignore
-      const themeSubHeader = new DataSubscription(new Data(undefined), (theme) => {
-        header.theme.set(theme as any)
-      }, true, false)
-
-      // @ts-ignore
-      const themeSubLowerNav = new DataSubscription(new Data(undefined), (theme) => {
-        lowerNav.theme.set(theme as any)
-      }, true, false)
-      
-
-      const accentThemeSub = new DataSubscription(new Data(undefined), (theme) => {
         
-        lowerNav.accentTheme.set(theme as any)
-      }, true, false)
-      pageManager.addAccentThemeIntersectionListener(lowerNav, accentThemeSub.data.bind(accentThemeSub))    
-      pageManager.addThemeIntersectionListener(header, themeSubHeader.data.bind(themeSubHeader))    
-      // pageManager.addThemeIntersectionListener(lowerNav, themeSubLowerNav.data.bind(themeSubLowerNav))
-      
-      pageManager.fullContentPaint().then(() => {
-        pageManager.completePaint().then(() => {
-
-        })
-      })
-
-    })
-    
-    
-    
-
-
-
-
-
-    this.apd(header, lowerNav)
-    
-    
-    
-
+        historyEntryElem.apd(fullEntryElem)
+      }
+      await delay(500)
+    }))
 
     
+    this.apd(historyWrapper)
+
 
   }
 
   stl() {
-    return super.stl() + require("./site.css").toString()
+    return require("./site.css").toString()
   }
   pug() {
     return require("./site.pug").default

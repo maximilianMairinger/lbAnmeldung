@@ -1,51 +1,70 @@
-component-body {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
-
 :host {
+  overflow-y: auto;
+  display: inline-block;
   position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+
+component-body {
+  position: relative;
+  display: inline-block;
   left: 0;
   top: 0;
-  right: 0;
-  bottom: 0;
+  width: calc(100% - 40px);
+  margin-left: 20px;
 }
 
-c-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 55px;
-  z-index: 101;
+c-block-button {
+  margin-right: 10px;
 }
 
-
-c-page-manager {
-  opacity: 1;
-}
-
-c-lower-nav {
-  height: 75px;
+history-wrapper {
   display: block;
-  position: absolute;
-  bottom: 0;
-  z-index: 101;
-  left: 10px;
-  bottom: 10px;
-  right: 10px;
-  position: absolute;
 }
 
-cookie-notice-container {
-  bottom: 16px;
-  right: 0;
-  left: 0;
-  margin: 0 auto;
-  z-index: 420;
+history-entry {
   display: block;
-  position: absolute;
 }
+
+h2 {
+  margin-bottom: 7px;
+  margin-top: 20px
+}
+
+history-entry:last-child {
+  padding-bottom: 30px;
+}
+
+history-entry *:not(h2) {
+  font-weight: normal !important;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+diff-add {
+  color: rgb(0, 184, 0)
+}
+
+diff-rem {
+  color: rgb(255, 0, 0);
+  text-decoration: line-through;
+}
+
+diff-same {
+  color: black
+}
+
+
+
+/* @font-face {
+  font-family: 'Overpass';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./../../../res/font/overpass.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+} */

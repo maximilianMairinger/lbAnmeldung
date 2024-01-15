@@ -2,7 +2,7 @@ import Component from "../component"
 import declareComponent from "./../../lib/declareComponent"
 import { loadRecord } from "../_themeAble/_frame/frame"
 import { Data } from "josm"
-import ResablePromise from "../../lib/resablePromise"
+import { SettledPromise } from "more-proms"
 import { BodyTypes } from "./pugBody.gen"; import "./pugBody.gen"
 
 const unionSymbol = "@"
@@ -60,7 +60,7 @@ function isExplicitLocation(location: string) {
 const ratio = 16 / 9
 
 export default class Image extends Component {
-  public readonly loaded: {[key in typeof resesList[number]]?: ResablePromise<void>} = {}
+  public readonly loaded: {[key in typeof resesList[number]]?: SettledPromise<void>} = {}
   private elems: {[key in typeof resesList[number]]?: {picture: HTMLPictureElement, sources: {setSource: (src: string) => void}[], img: HTMLImageElement &  {setSource: (src: string) => void}}} = {}
   private myWantedRes = this.resizeData().tunnel(({width, height}) => Math.sqrt(width * height * ratio))
   protected body: BodyTypes
@@ -114,14 +114,14 @@ export default class Image extends Component {
   }
 
   private newLoadedPromise(resolution: typeof resesList[number]) {
-    this.loaded[resolution] = new ResablePromise((res, rej) => {
+    this.loaded[resolution] = new SettledPromise<void>((res, rej) => {
       this.elems[resolution].img.onload = () => {
         res();
       }
       this.elems[resolution].img.onerror = () => {
         (rej as any)(new Error("Image failed to load. Url: " + this.elems[resolution].img.src));
       }
-    })
+    }) as SettledPromise<void>
   }
 
   private wasAtStageIndex = {}
