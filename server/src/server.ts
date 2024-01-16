@@ -59,6 +59,7 @@ setup("lbAnmeldung").then(async ({app, db}) => {
       if (lastTxt !== newTxt) {
         addLineToFile(newTxt)
         sendMsgToClients("Change detected")
+        lastTxt = newTxt
       }
     }
     catch(e) {
